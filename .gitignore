@@ -1,0 +1,5 @@
+.idea/
+gradle/wrapper/gradle-wrapper.jar
+
+# Project exclude paths
+/.gradle/
