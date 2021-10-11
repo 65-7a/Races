@@ -1,5 +1,40 @@
-name: Classes
+name: Races
 version: 1.0.0
 author: 65_7a
-main: com.callumwong.classes.Classes
+main: com.callumwong.races.Races
 api-version: 1.16
+commands:
+  races:
+    description: Main command for Races.
+  race:
+    description: Get you or someone else's race.
+permissions:
+  races.admin:
+    children:
+      races.get: true
+      races.get.others: true
+      races.reset: true
+      races.reload: true
+      races.list: true
+      races.help: true
+    description: Gives access to all Races commands
+  races.get:
+    description: Allows you to get your own race
+    default: true
+  races.get.others:
+    description: Allows you to get other people's races
+    default: true
+  races.reset:
+    description: Admin command to reset someone's race
+    default: false
+  races.reload:
+    description: Admin command to reload the configuration
+    default: false
+  races.list:
+    description: Allows you to list all races and their descriptions
+    default: true
+  races.help:
+    description: Allows you to list all Races commands
+    default: true
+depend:
+  - ProtocolLib

@@ -1,0 +1,8 @@
+FirstJoinMessage: |-
+  §fTo play on this server, you must select a class. Each class has different traits, advantages and disadvantages.
+  §cYou cannot change your class after selection. Think carefully about your choice.
+  §rTo list each race, use §5/races list
+  §rTo select a race, use §5/races select <race>
+NetherWorldName: world_nether
+DestroyProhibitedItems: false
+DestroyProhibitedArmor: false
