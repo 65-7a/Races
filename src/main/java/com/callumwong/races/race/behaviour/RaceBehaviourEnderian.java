@@ -84,7 +84,7 @@ public class RaceBehaviourEnderian extends AbstractRaceBehaviour implements IAtt
     }
 
     private void addPearl(Player player) {
-        if (player.getInventory().firstEmpty() > -1) {
+        if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Enderian's Pearl"))) {
                 if (player.getInventory().getContents()[8] == null) {
