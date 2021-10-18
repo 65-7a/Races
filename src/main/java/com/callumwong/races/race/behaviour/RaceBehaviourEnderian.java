@@ -19,8 +19,7 @@ package com.callumwong.races.race.behaviour;
 
 import com.callumwong.races.Races;
 import com.callumwong.races.item.RacesItems;
-import com.callumwong.races.race.AbstractRaceBehaviour;
-import com.callumwong.races.race.IAbilitiesRace;
+import com.callumwong.races.race.AbstractAbilityRaceBehaviour;
 import com.callumwong.races.race.IAttributedRace;
 import com.callumwong.races.util.RacesUtils;
 import net.md_5.bungee.api.ChatMessageType;
@@ -42,7 +41,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class RaceBehaviourEnderian extends AbstractRaceBehaviour implements IAttributedRace, IAbilitiesRace {
+public class RaceBehaviourEnderian extends AbstractAbilityRaceBehaviour implements IAttributedRace {
     private static final AttributeModifier ENDERIAN_HEALTH_BOOST = new AttributeModifier(UUID.fromString("ca4f36ac-ca64-4d40-9998-5dae6015fdd1"), "EnderianHealthBoost", 5, AttributeModifier.Operation.ADD_NUMBER);
     private static final AttributeModifier ENDERIAN_KNOCKBACK_RESISTANCE = new AttributeModifier(UUID.fromString("b20c57f1-e06f-4899-ab5f-c208d8fbf280"), "EnderianKnockbackResist", 0.5, AttributeModifier.Operation.ADD_NUMBER);
 
@@ -61,7 +60,8 @@ public class RaceBehaviourEnderian extends AbstractRaceBehaviour implements IAtt
     @Override
     public void onTick(Player player) {
         for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
-            if (entity instanceof Player && ((Player) entity).getInventory().getHelmet() != null && ((Player) entity).getInventory().getHelmet().getType() == Material.CARVED_PUMPKIN) {
+            if (entity instanceof Player && ((Player) entity).getInventory().getHelmet() != null
+                    && ((Player) entity).getInventory().getHelmet().getType() == Material.CARVED_PUMPKIN) {
                 player.addPotionEffect(PotionEffectType.SLOW.createEffect(100, 0));
                 player.addPotionEffect(PotionEffectType.BLINDNESS.createEffect(100, 0));
 
@@ -87,10 +87,12 @@ public class RaceBehaviourEnderian extends AbstractRaceBehaviour implements IAtt
         if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Enderian's Pearl"))) {
-                if (player.getInventory().getContents()[8] == null) {
-                    player.getInventory().setItem(8, RacesItems.getEnderianPearl());
-                } else {
-                    player.getInventory().addItem(RacesItems.getEnderianPearl());
+                ItemStack clone = player.getInventory().getContents()[8].clone();
+                player.getInventory().setItem(8, RacesItems.getEnderianPearl());
+                if (player.getInventory().getContents()[8] != null) {
+                    player.getInventory().addItem(clone).forEach((integer, itemStack) -> {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }); // try to add the item to the player's inv, if not drop it to the floor
                 }
             }
         }
@@ -98,6 +100,8 @@ public class RaceBehaviourEnderian extends AbstractRaceBehaviour implements IAtt
 
     @Override
     public void onSecond(Player player) {
+        super.onSecond(player);
+
         long cooldownEnd = player.getPersistentDataContainer().getOrDefault(ENDERIAN_PEARL_KEY, PersistentDataType.LONG, System.currentTimeMillis()) + 3000L;
         String cooldownMessage = "";
 
