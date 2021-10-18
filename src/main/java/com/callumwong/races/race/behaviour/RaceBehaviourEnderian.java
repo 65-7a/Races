@@ -108,7 +108,7 @@ public class RaceBehaviourEnderian extends AbstractRaceBehaviour implements IAtt
 
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + cooldownMessage));
 
-        if ((player.getWorld().hasStorm() || player.getWorld().isThundering())
+        if (player.getWorld().hasStorm()
                 && player.getLocation().getBlock().getLightFromSky() >= 15
                 && player.getWorld().getEnvironment() != World.Environment.NETHER && player.getWorld().getEnvironment() != World.Environment.THE_END
                 && !Arrays.asList(RacesUtils.WARM_BIOMES).contains(player.getWorld().getBiome(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()))
