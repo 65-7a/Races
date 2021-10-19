@@ -34,15 +34,8 @@ public abstract class AbstractAbilityRaceBehaviour extends AbstractRaceBehaviour
 
     private void checkInventory(Player player) {
         Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 9, 35)).forEach(itemStack -> {
-            if (abilities().values().stream().anyMatch(s -> itemStack != null
-                    && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals(s))) {
-                ItemStack clone = player.getInventory().getContents()[8].clone();
+            if (abilities().values().stream().anyMatch(s -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals(s))) {
                 player.getInventory().setItem(8, RacesItems.getEnderianPearl());
-                if (player.getInventory().getContents()[8] != null) {
-                    player.getInventory().addItem(clone).forEach((integer, stack) -> {
-                        player.getWorld().dropItem(player.getLocation(), stack);
-                    }); // try to add the item to the player's inv, if not drop it to the floor
-                }
             }
         });
     }
