@@ -19,8 +19,7 @@ package com.callumwong.races.race.behaviour;
 
 import com.callumwong.races.Races;
 import com.callumwong.races.item.RacesItems;
-import com.callumwong.races.race.AbstractRaceBehaviour;
-import com.callumwong.races.race.IAbilitiesRace;
+import com.callumwong.races.race.AbstractAbilityRaceBehaviour;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
@@ -34,7 +33,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class RaceBehaviourElytrian extends AbstractRaceBehaviour implements IAbilitiesRace {
+public class RaceBehaviourElytrian extends AbstractAbilityRaceBehaviour {
     public static final NamespacedKey ELYTRIAN_FEATHER_KEY = new NamespacedKey(Races.getPlugin(Races.class), "lastUsedElytrianFeather");
 
     @Override
@@ -71,13 +70,15 @@ public class RaceBehaviourElytrian extends AbstractRaceBehaviour implements IAbi
     }
 
     private void addFeather(Player player) {
-        if (player.getInventory().firstEmpty() > -1) {
+        if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Elytrian's Launch"))) {
-                if (player.getInventory().getContents()[8] == null) {
-                    player.getInventory().setItem(8, RacesItems.getElytrianFeather());
-                } else {
-                    player.getInventory().addItem(RacesItems.getElytrianFeather());
+                ItemStack clone = player.getInventory().getContents()[8].clone();
+                player.getInventory().setItem(8, RacesItems.getElytrianFeather());
+                if (player.getInventory().getContents()[8] != null) {
+                    player.getInventory().addItem(clone).forEach((integer, itemStack) -> {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }); // try to add the item to the player's inv, if not drop it to the floor
                 }
             }
         }
@@ -85,6 +86,8 @@ public class RaceBehaviourElytrian extends AbstractRaceBehaviour implements IAbi
 
     @Override
     public void onSecond(Player player) {
+        super.onSecond(player);
+
         long cooldownEnd = player.getPersistentDataContainer().getOrDefault(ELYTRIAN_FEATHER_KEY, PersistentDataType.LONG, System.currentTimeMillis()) + 30000L;
         String cooldownMessage = "";
 

@@ -19,8 +19,7 @@ package com.callumwong.races.race.behaviour;
 
 import com.callumwong.races.Races;
 import com.callumwong.races.item.RacesItems;
-import com.callumwong.races.race.AbstractRaceBehaviour;
-import com.callumwong.races.race.IAbilitiesRace;
+import com.callumwong.races.race.AbstractAbilityRaceBehaviour;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
@@ -36,7 +35,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class RaceBehaviourEvocationeer extends AbstractRaceBehaviour implements IAbilitiesRace {
+public class RaceBehaviourEvocationeer extends AbstractAbilityRaceBehaviour {
     public static final NamespacedKey EVOCATIONEER_WRATH_KEY = new NamespacedKey(Races.getPlugin(Races.class), "lastUsedEvocationeerWrath");
 
     @Override
@@ -69,13 +68,15 @@ public class RaceBehaviourEvocationeer extends AbstractRaceBehaviour implements 
     }
 
     private void addWrath(Player player) {
-        if (player.getInventory().firstEmpty() > -1) {
+        if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Evocationeer's Wrath"))) {
-                if (player.getInventory().getContents()[8] == null) {
-                    player.getInventory().setItem(8, RacesItems.getEvocationeerEmerald());
-                } else {
-                    player.getInventory().addItem(RacesItems.getEvocationeerEmerald());
+                ItemStack clone = player.getInventory().getContents()[8].clone();
+                player.getInventory().setItem(8, RacesItems.getEvocationeerEmerald());
+                if (player.getInventory().getContents()[8] != null) {
+                    player.getInventory().addItem(clone).forEach((integer, itemStack) -> {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }); // try to add the item to the player's inv, if not drop it to the floor
                 }
             }
         }
@@ -83,6 +84,8 @@ public class RaceBehaviourEvocationeer extends AbstractRaceBehaviour implements 
 
     @Override
     public void onSecond(Player player) {
+        super.onSecond(player);
+
         long cooldownEnd = player.getPersistentDataContainer().getOrDefault(EVOCATIONEER_WRATH_KEY, PersistentDataType.LONG, System.currentTimeMillis()) + 10000L;
         String cooldownMessage = "";
 

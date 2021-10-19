@@ -51,6 +51,16 @@ public class Races extends JavaPlugin {
     @SuppressWarnings("deprecation")
     public void onEnable() {
         saveDefaultConfig();
+        getConfig().addDefault("FirstJoinMessage", "\u00a7fTo play on this server, you must select a class. Each class has different traits, advantages and disadvantages.\n" +
+                "\u00a7cYou cannot change your class after selection. Think carefully about your choice.\n" +
+                "\u00a7rTo list each race, use \u00a75/races list\n" +
+                "\u00a7rTo select a race, use \u00a75/races select <race>");
+        getConfig().addDefault("NetherWorldName", "world_nether");
+        getConfig().addDefault("DestroyProhibitedItems", false);
+        getConfig().addDefault("DestroyProhibitedArmor", false);
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
         createCustomConfigs();
 
         EventListener mainListener = new EventListener();

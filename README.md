@@ -5,6 +5,8 @@
 ![GitHub issues](https://img.shields.io/github/issues/65-7a/Races?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/65-7a/Races?style=flat-square)
 
+**NOTE**: Dead plugin btw
+
 A Spigot plugin which adds classes or races for players to pick.
 
 Inspired by the [Origins](https://www.curseforge.com/minecraft/mc-mods/origins) mod.

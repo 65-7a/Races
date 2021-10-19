@@ -57,7 +57,7 @@ public enum RaceType {
                     "+ Can shoot fireballs on a 4 second cooldown wherever they are aiming (not affected by gravity)\n" +
                     "= Natural spawnpoint in the nether dimension\n" +
                     "- Takes damage in water or rain (1 heart per second)\n" +
-                    "- Cannot use bow, crossbor or shield", new RaceBehaviourBlazeborn()),
+                    "- Cannot use bow, crossbow or shield", new RaceBehaviourBlazeborn()),
 
     AVIAN("Avian", "avian",
             "+ Fall damage is completely negated\n" +

@@ -19,8 +19,7 @@ package com.callumwong.races.race.behaviour;
 
 import com.callumwong.races.Races;
 import com.callumwong.races.item.RacesItems;
-import com.callumwong.races.race.AbstractRaceBehaviour;
-import com.callumwong.races.race.IAbilitiesRace;
+import com.callumwong.races.race.AbstractAbilityRaceBehaviour;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
@@ -35,7 +34,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class RaceBehaviourStarborne extends AbstractRaceBehaviour implements IAbilitiesRace {
+public class RaceBehaviourStarborne extends AbstractAbilityRaceBehaviour {
     public static final NamespacedKey STARBORNE_FEATHER_KEY = new NamespacedKey(Races.getPlugin(Races.class), "lastUsedStarborneFeather");
     public static final NamespacedKey STARBORNE_STAR_KEY = new NamespacedKey(Races.getPlugin(Races.class), "lastUsedStarborneStar");
     public static final NamespacedKey STARBORNE_DEATH_KEY = new NamespacedKey(Races.getPlugin(Races.class), "lastUsedStarborneDeathExplosion");
@@ -54,6 +53,8 @@ public class RaceBehaviourStarborne extends AbstractRaceBehaviour implements IAb
 
     @Override
     public void onSecond(Player player) {
+        super.onSecond(player);
+
         long featherCooldownEnd = player.getPersistentDataContainer().getOrDefault(STARBORNE_FEATHER_KEY, PersistentDataType.LONG, System.currentTimeMillis()) + 10000L;
         long starCooldownEnd = player.getPersistentDataContainer().getOrDefault(STARBORNE_STAR_KEY, PersistentDataType.LONG, System.currentTimeMillis()) + 45000L;
         long deathCooldownEnd = player.getPersistentDataContainer().getOrDefault(STARBORNE_DEATH_KEY, PersistentDataType.LONG, System.currentTimeMillis()) + 1800000L; // 30 mins
@@ -82,26 +83,30 @@ public class RaceBehaviourStarborne extends AbstractRaceBehaviour implements IAb
     }
 
     private void addFeather(Player player) {
-        if (player.getInventory().firstEmpty() > -1) {
+        if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Starborne's Dash"))) {
-                if (player.getInventory().getContents()[8] == null) {
-                    player.getInventory().setItem(8, RacesItems.getStarborneFeather());
-                } else {
-                    player.getInventory().addItem(RacesItems.getStarborneFeather());
+                ItemStack clone = player.getInventory().getContents()[8].clone();
+                player.getInventory().setItem(8, RacesItems.getStarborneFeather());
+                if (player.getInventory().getContents()[8] != null) {
+                    player.getInventory().addItem(clone).forEach((integer, itemStack) -> {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }); // try to add the item to the player's inv, if not drop it to the floor
                 }
             }
         }
     }
 
     private void addStar(Player player) {
-        if (player.getInventory().firstEmpty() > -1) {
+        if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Starborne's Beam"))) {
-                if (player.getInventory().getContents()[7] == null) {
-                    player.getInventory().setItem(7, RacesItems.getStarborneStar());
-                } else {
-                    player.getInventory().addItem(RacesItems.getStarborneStar());
+                ItemStack clone = player.getInventory().getContents()[8].clone();
+                player.getInventory().setItem(7, RacesItems.getStarborneStar());
+                if (player.getInventory().getContents()[7] != null) {
+                    player.getInventory().addItem(clone).forEach((integer, itemStack) -> {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }); // try to add the item to the player's inv, if not drop it to the floor
                 }
             }
         }

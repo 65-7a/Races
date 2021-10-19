@@ -19,6 +19,7 @@ package com.callumwong.races.race.behaviour;
 
 import com.callumwong.races.Races;
 import com.callumwong.races.item.RacesItems;
+import com.callumwong.races.race.AbstractAbilityRaceBehaviour;
 import com.callumwong.races.race.AbstractRaceBehaviour;
 import com.callumwong.races.race.IAttributedRace;
 import org.bukkit.Bukkit;
@@ -38,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class RaceBehaviourShulk extends AbstractRaceBehaviour implements IAttributedRace {
+public class RaceBehaviourShulk extends AbstractAbilityRaceBehaviour implements IAttributedRace {
     public static final AttributeModifier SHULK_ARMOR_POINTS = new AttributeModifier(UUID.fromString("7dbb7147-534a-4d0f-a9ef-3a3e87ece054"), "ShulkArmorPoints", 6, AttributeModifier.Operation.ADD_NUMBER);
 
     public static HashMap<UUID, Inventory> BACKPACKS = new HashMap<>();
@@ -90,13 +91,15 @@ public class RaceBehaviourShulk extends AbstractRaceBehaviour implements IAttrib
 
     @Override
     public void onSecond(Player player) {
-        if (player.getInventory().firstEmpty() > -1) {
+        if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Shulk's Backpack"))) {
-                if (player.getInventory().getContents()[8] == null) {
-                    player.getInventory().setItem(8, RacesItems.getShulkBackpack());
-                } else {
-                    player.getInventory().addItem(RacesItems.getShulkBackpack());
+                ItemStack clone = player.getInventory().getContents()[8].clone();
+                player.getInventory().setItem(8, RacesItems.getShulkBackpack());
+                if (player.getInventory().getContents()[8] != null) {
+                    player.getInventory().addItem(clone).forEach((integer, itemStack) -> {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }); // try to add the item to the player's inv, if not drop it to the floor
                 }
             }
         }
@@ -108,6 +111,13 @@ public class RaceBehaviourShulk extends AbstractRaceBehaviour implements IAttrib
     public @NotNull HashMap<Attribute, AttributeModifier> attributeModifiers() {
         HashMap<Attribute, AttributeModifier> hashMap = new HashMap<>();
         hashMap.put(Attribute.GENERIC_ARMOR, SHULK_ARMOR_POINTS);
+        return hashMap;
+    }
+
+    @Override
+    public HashMap<ItemStack, String> abilities() {
+        HashMap<ItemStack, String> hashMap = new HashMap<>();
+        hashMap.put(RacesItems.getShulkBackpack(), "Shulk's Backpack");
         return hashMap;
     }
 }

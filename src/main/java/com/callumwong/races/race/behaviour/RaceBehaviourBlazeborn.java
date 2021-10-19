@@ -19,8 +19,7 @@ package com.callumwong.races.race.behaviour;
 
 import com.callumwong.races.Races;
 import com.callumwong.races.item.RacesItems;
-import com.callumwong.races.race.AbstractRaceBehaviour;
-import com.callumwong.races.race.IAbilitiesRace;
+import com.callumwong.races.race.AbstractAbilityRaceBehaviour;
 import com.callumwong.races.util.RacesUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -36,7 +35,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class RaceBehaviourBlazeborn extends AbstractRaceBehaviour implements IAbilitiesRace {
+public class RaceBehaviourBlazeborn extends AbstractAbilityRaceBehaviour {
     public static final NamespacedKey BLAZEBORN_FIREBALL_KEY = new NamespacedKey(Races.getPlugin(Races.class), "lastUsedBlazebornFireball");
 
     @Override
@@ -66,13 +65,15 @@ public class RaceBehaviourBlazeborn extends AbstractRaceBehaviour implements IAb
     }
 
     private void addFireball(Player player) {
-        if (player.getInventory().firstEmpty() > -1) {
+        if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Blazeborn's Fireball"))) {
-                if (player.getInventory().getContents()[8] == null) {
-                    player.getInventory().setItem(8, RacesItems.getBlazebornFireball());
-                } else {
-                    player.getInventory().addItem(RacesItems.getBlazebornFireball());
+                ItemStack clone = player.getInventory().getContents()[8].clone();
+                player.getInventory().setItem(8, RacesItems.getBlazebornFireball());
+                if (player.getInventory().getContents()[8] != null) {
+                    player.getInventory().addItem(clone).forEach((integer, itemStack) -> {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }); // try to add the item to the player's inv, if not drop it to the floor
                 }
             }
         }
@@ -80,6 +81,8 @@ public class RaceBehaviourBlazeborn extends AbstractRaceBehaviour implements IAb
 
     @Override
     public void onSecond(Player player) {
+        super.onSecond(player);
+
         long cooldownEnd = player.getPersistentDataContainer().getOrDefault(BLAZEBORN_FIREBALL_KEY, PersistentDataType.LONG, System.currentTimeMillis()) + 4000L;
         String cooldownMessage = "";
 
@@ -90,7 +93,7 @@ public class RaceBehaviourBlazeborn extends AbstractRaceBehaviour implements IAb
 
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + cooldownMessage));
 
-        if ((player.getWorld().hasStorm() || player.getWorld().isThundering())
+        if (player.getWorld().hasStorm()
                 && player.getLocation().getBlock().getLightFromSky() >= 15
                 && player.getWorld().getEnvironment() != World.Environment.NETHER && player.getWorld().getEnvironment() != World.Environment.THE_END
                 && !Arrays.asList(RacesUtils.WARM_BIOMES).contains(player.getWorld().getBiome(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()))

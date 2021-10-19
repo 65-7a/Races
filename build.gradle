@@ -6,7 +6,7 @@ plugins {
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 group 'com.callumwong'
-version '1.0.0'
+version '1.0.1'
 
 repositories {
     mavenCentral()

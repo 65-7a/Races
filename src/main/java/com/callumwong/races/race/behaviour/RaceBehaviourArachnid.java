@@ -23,10 +23,7 @@ import com.callumwong.races.race.AbstractRaceBehaviour;
 import com.callumwong.races.race.IAttributedRace;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
@@ -77,7 +74,7 @@ public class RaceBehaviourArachnid extends AbstractRaceBehaviour implements IAtt
     }
 
     private void addCobweb(Player player) {
-        if (player.getInventory().firstEmpty() > -1) {
+        if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getItemMeta() == null || !player.getItemOnCursor().getItemMeta().getLocalizedName().equals("Arachnid's Cobweb")) {
                 if (Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null
                         && itemStack.getItemMeta().getLocalizedName().equals("Arachnid's Cobweb"))) {

@@ -21,12 +21,14 @@ import com.callumwong.races.race.RaceType;
 import com.callumwong.races.race.behaviour.RaceBehaviourElytrian;
 import com.callumwong.races.util.RacesUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
@@ -55,6 +57,17 @@ public class ElytrianEventListener implements Listener {
                     event.setDamage(event.getDamage() * 2);
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (RacesUtils.getRace(event.getPlayer()) != RaceType.ELYTRIAN
+                && event.getPlayer().getInventory().getChestplate() != null
+                && event.getPlayer().getInventory().getChestplate().getItemMeta() != null
+                && event.getPlayer().getInventory().getChestplate().getItemMeta().getLocalizedName().equals("Elytrian's Elytra")) {
+            event.getPlayer().getInventory().getChestplate().setAmount(0);
+            event.getPlayer().getInventory().getChestplate().setType(Material.AIR);
         }
     }
 }

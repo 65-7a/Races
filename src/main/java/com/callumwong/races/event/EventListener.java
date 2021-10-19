@@ -18,8 +18,8 @@
 package com.callumwong.races.event;
 
 import com.callumwong.races.Races;
+import com.callumwong.races.race.AbstractAbilityRaceBehaviour;
 import com.callumwong.races.race.AbstractRaceBehaviour;
-import com.callumwong.races.race.IAbilitiesRace;
 import com.callumwong.races.race.IAttributedRace;
 import com.callumwong.races.util.RacesUtils;
 import org.bukkit.ChatColor;
@@ -119,8 +119,8 @@ public class EventListener implements Listener {
                 event.setCancelled(true);
             }
 
-            if (RacesUtils.getRace(player).getBehaviour() instanceof IAbilitiesRace) {
-                IAbilitiesRace abilitiesRace = (IAbilitiesRace) RacesUtils.getRace(player).getBehaviour();
+            if (RacesUtils.getRace(player).getBehaviour() instanceof AbstractAbilityRaceBehaviour) {
+                AbstractAbilityRaceBehaviour abilitiesRace = (AbstractAbilityRaceBehaviour) RacesUtils.getRace(player).getBehaviour();
                 event.setCancelled(abilitiesRace.abilities().values().stream().anyMatch(s -> event.getItem().getItemStack().getItemMeta() != null && event.getItem().getItemStack().getItemMeta().getLocalizedName().equals(s)));
             }
         }
@@ -133,8 +133,8 @@ public class EventListener implements Listener {
             event.setCancelled(true);
         }
 
-        if (RacesUtils.getRace(player).getBehaviour() instanceof IAbilitiesRace) {
-            IAbilitiesRace abilitiesRace = (IAbilitiesRace) RacesUtils.getRace(player).getBehaviour();
+        if (RacesUtils.getRace(player).getBehaviour() instanceof AbstractAbilityRaceBehaviour) {
+            AbstractAbilityRaceBehaviour abilitiesRace = (AbstractAbilityRaceBehaviour) RacesUtils.getRace(player).getBehaviour();
             event.setCancelled(abilitiesRace.abilities().values().stream().anyMatch(s -> event.getItemDrop().getItemStack().getItemMeta() != null && event.getItemDrop().getItemStack().getItemMeta().getLocalizedName().equals(s)));
         }
     }
@@ -142,8 +142,8 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (RacesUtils.getRace(player).getBehaviour() instanceof IAbilitiesRace) {
-            IAbilitiesRace abilitiesRace = (IAbilitiesRace) RacesUtils.getRace(player).getBehaviour();
+        if (RacesUtils.getRace(player).getBehaviour() instanceof AbstractAbilityRaceBehaviour) {
+            AbstractAbilityRaceBehaviour abilitiesRace = (AbstractAbilityRaceBehaviour) RacesUtils.getRace(player).getBehaviour();
             event.getDrops().removeIf(itemStack -> abilitiesRace.abilities().values().stream().anyMatch(s -> itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals(s)));
         }
     }
@@ -152,8 +152,8 @@ public class EventListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
-            if (RacesUtils.getRace(player).getBehaviour() instanceof IAbilitiesRace) {
-                IAbilitiesRace abilitiesRace = (IAbilitiesRace) RacesUtils.getRace(player).getBehaviour();
+            if (RacesUtils.getRace(player).getBehaviour() instanceof AbstractAbilityRaceBehaviour) {
+                AbstractAbilityRaceBehaviour abilitiesRace = (AbstractAbilityRaceBehaviour) RacesUtils.getRace(player).getBehaviour();
                 event.setCancelled(abilitiesRace.abilities().values().stream().anyMatch(s -> event.getClickedInventory() != null && event.getClickedInventory().getItem(event.getSlot()) != null
                         && event.getClickedInventory().getItem(event.getSlot()).getItemMeta() != null && event.getClickedInventory().getItem(event.getSlot()).getItemMeta().getLocalizedName().equals(s)));
             }
