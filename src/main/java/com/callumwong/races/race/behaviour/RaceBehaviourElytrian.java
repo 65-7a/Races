@@ -73,13 +73,13 @@ public class RaceBehaviourElytrian extends AbstractAbilityRaceBehaviour {
         if (Arrays.stream(Arrays.copyOfRange(player.getInventory().getContents(), 0, 8 + 1)).anyMatch(itemStack -> itemStack == null || itemStack.getType() == Material.AIR)) {
             if (player.getItemOnCursor().getType() == Material.AIR
                     && Arrays.stream(player.getInventory().getContents()).noneMatch(itemStack -> itemStack != null && itemStack.getItemMeta() != null && itemStack.getItemMeta().getLocalizedName().equals("Elytrian's Launch"))) {
-                ItemStack clone = player.getInventory().getContents()[8].clone();
-                player.getInventory().setItem(8, RacesItems.getElytrianFeather());
                 if (player.getInventory().getContents()[8] != null) {
+                    ItemStack clone = player.getInventory().getContents()[8].clone();
                     player.getInventory().addItem(clone).forEach((integer, itemStack) -> {
                         player.getWorld().dropItem(player.getLocation(), itemStack);
                     }); // try to add the item to the player's inv, if not drop it to the floor
                 }
+                player.getInventory().setItem(8, RacesItems.getElytrianFeather());
             }
         }
     }
